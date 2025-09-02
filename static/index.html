@@ -99,3 +99,98 @@
             </div>
         </div>
     </div>
+<!-- Status Update Modal -->
+    <div id="status-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Update Item Status</h3>
+            <form id="status-form">
+                <div class="form-group">
+                    <label>New Status</label>
+                    <select id="new-status" required>
+                        <option value="lost">Lost</option>
+                        <option value="found">Found</option>
+                        <option value="claimed">Claimed</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Update Status</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 1001;"></div>
+
+    <script>
+        let currentItems = [];
+        let currentEditingItem = null;
+
+        // API Base URL
+        const API_BASE = '/api';
+
+        // DOM Elements
+        const itemForm = document.getElementById('item-form');
+        const itemsContainer = document.getElementById('items-container');
+        const statusModal = document.getElementById('status-modal');
+        const statusForm = document.getElementById('status-form');
+        const alertContainer = document.getElementById('alert-container');
+
+        // Event Listeners
+        itemForm.addEventListener('submit', handleSubmitItem);
+        statusForm.addEventListener('submit', handleUpdateStatus);
+        
+        // Search and filter listeners
+        document.getElementById('search-name').addEventListener('input', debounce(loadItems, 300));
+        document.getElementById('search-location').addEventListener('input', debounce(loadItems, 300));
+        document.getElementById('filter-status').addEventListener('change', loadItems);
+        document.getElementById('filter-type').addEventListener('change', loadItems);
+
+        // Modal handlers
+        document.querySelector('.close').addEventListener('click', () => {
+            statusModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === statusModal) {
+                statusModal.style.display = 'none';
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadItems();
+            loadStats();
+        });
+
+        // Utility Functions
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function showAlert(message, type = 'success') {
+            const alert = document.createElement('div');
+            alert.className = alert alert-${type};
+            alert.textContent = message;
+            alertContainer.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
