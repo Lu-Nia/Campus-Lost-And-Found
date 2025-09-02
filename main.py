@@ -47,3 +47,56 @@ class ItemCreate(BaseModel):
     contact_phone: Optional[str] = None
     is_lost_report: bool = True
 
+
+class ItemUpdate(BaseModel):
+    status: ItemStatus
+
+class ItemResponse(BaseModel):
+    id: str
+    name: str
+    description: str
+    location: str
+    date_reported: datetime
+    status: ItemStatus
+    contact_email: str
+    contact_phone: Optional[str]
+    is_lost_report: bool
+    linked_item_id: Optional[str]
+    
+    class Config:
+        from_attributes = True
+
+# ---------------- Create Tables ----------------
+Base.metadata.create_all(bind=engine)
+
+# ---------------- FastAPI App ----------------
+app = FastAPI(
+    title="Campus Digital Lost & Found API",
+    description="API for managing lost and found items on campus",
+    version="1.0.0"
+)
+
+# ---------------- Static Files ----------------
+if not os.path.exists("static"):
+    os.makedirs("static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# ---------------- Dependency ----------------
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# ---------------- Helper Functions ----------------
+def generate_item_id():
+    return str(uuid.uuid4())[:8].upper()
+
+# ---------------- Serve HTML Interface ----------------
+@app.get("/", response_class=HTMLResponse)
+async def read_root():
+    html_path = os.path.join("static", "index.html")
+    return FileResponse(html_path)
+
+
