@@ -291,3 +291,82 @@
             div.textContent = text;
             return div.innerHTML;
         }
+
+
+        // Form Handlers
+        async function handleSubmitItem(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('item-name').value,
+                description: document.getElementById('item-description').value,
+                location: document.getElementById('item-location').value,
+                contact_email: document.getElementById('contact-email').value,
+                contact_phone: document.getElementById('contact-phone').value || null,
+                is_lost_report: document.getElementById('report-type').value === 'true'
+            };
+
+            try {
+                await apiCall('/items', {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                });
+                
+                showAlert('Item reported successfully!');
+                itemForm.reset();
+                loadItems();
+                loadStats();
+            } catch (error) {
+                showAlert(`Error submitting item: ${error.message}`, 'error');
+            }
+        }
+
+        async function handleUpdateStatus(e) {
+            e.preventDefault();
+            
+            if (!currentEditingItem) return;
+            
+            const newStatus = document.getElementById('new-status').value;
+            
+            try {
+                await apiCall(`/items/${currentEditingItem}/status`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                showAlert('Status updated successfully!');
+                statusModal.style.display = 'none';
+                loadItems();
+                loadStats();
+            } catch (error) {
+                showAlert(`Error updating status: ${error.message}`, 'error');
+            }
+        }
+
+        // Modal and Action Functions
+        function openStatusModal(itemId, currentStatus) {
+            currentEditingItem = itemId;
+            document.getElementById('new-status').value = currentStatus;
+            statusModal.style.display = 'block';
+        }
+
+        async function deleteItem(itemId) {
+            if (!confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                await apiCall(`/items/${itemId}`, {
+                    method: 'DELETE'
+                });
+                
+                showAlert('Item deleted successfully!');
+                loadItems();
+                loadStats();
+            } catch (error) {
+                showAlert(`Error deleting item: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
