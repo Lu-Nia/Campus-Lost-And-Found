@@ -98,5 +98,59 @@ def generate_item_id():
 async def read_root():
     html_path = os.path.join("static", "index.html")
     return FileResponse(html_path)
+# ---------------- Health Check ----------------
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "message": "API is running successfully"}
+
+# ---------------- CRUD Routes ----------------
+@app.post("/api/items", response_model=ItemResponse, status_code=status.HTTP_201_CREATED)
+def create_item(item: ItemCreate, db: Session = Depends(get_db)):
+    existing = db.query(Item).filter(
+        Item.name.ilike(f"%{item.name}%"),
+        Item.contact_email == item.contact_email,
+        Item.is_lost_report == item.is_lost_report,
+        Item.status != ItemStatus.claimed
+    ).first()
+    
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A similar item has already been reported by this user"
+        )
+    
+    db_item = Item(
+        id=generate_item_id(),
+        **item.dict(),
+        status=ItemStatus.found if not item.is_lost_report else ItemStatus.lost
+    )
+    
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    
+    return db_item
+
+@app.get("/api/items", response_model=List[ItemResponse])
+def get_items(
+    name: Optional[str] = None,
+    location: Optional[str] = None,
+    status: Optional[ItemStatus] = None,
+    item_type: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    query = db.query(Item)
+    if name:
+        query = query.filter(Item.name.ilike(f"%{name}%"))
+    if location:
+        query = query.filter(Item.location.ilike(f"%{location}%"))
+    if status:
+        query = query.filter(Item.status == status)
+    if item_type == "lost":
+        query = query.filter(Item.is_lost_report == True)
+    elif item_type == "found":
+        query = query.filter(Item.is_lost_report == False)
+    
+    return query.order_by(Item.date_reported.desc()).all()
 
 
