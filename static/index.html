@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Digital Lost & Found</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎒 Campus Digital Lost & Found</h1>
+            <p class="subtitle">Help reunite items with their owners</p>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number" id="total-items">0</div>
+                <div class="stat-label">Total Items</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="lost-items">0</div>
+                <div class="stat-label">Lost Items</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="found-items">0</div>
+                <div class="stat-label">Found Items</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="claimed-items">0</div>
+                <div class="stat-label">Claimed Items</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="form-section">
+                    <h3>Report Item</h3>
+                    <form id="item-form">
+                        <div class="form-group">
+                            <label>Report Type</label>
+                            <select id="report-type" required>
+                                <option value="true">Lost Item</option>
+                                <option value="false">Found Item</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Item Name</label>
+                            <input type="text" id="item-name" required maxlength="100" placeholder="e.g., iPhone 12, Blue Backpack">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="item-description" required maxlength="500" placeholder="Detailed description of the item..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" id="item-location" required maxlength="100" placeholder="e.g., Library, Cafeteria, Parking Lot A">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Contact Email</label>
+                            <input type="email" id="contact-email" required placeholder="your.email@university.edu">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Contact Phone (Optional)</label>
+                            <input type="tel" id="contact-phone" maxlength="20" placeholder="(555) 123-4567">
+                        </div>
+                        
+                        <button type="submit" class="btn">Submit Report</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="search-filters">
+                    <input type="text" id="search-name" placeholder="Search by item name...">
+                    <input type="text" id="search-location" placeholder="Search by location...">
+                    <select id="filter-status">
+                        <option value="">All Statuses</option>
+                        <option value="lost">Lost</option>
+                        <option value="found">Found</option>
+                        <option value="claimed">Claimed</option>
+                    </select>
+                    <select id="filter-type">
+                        <option value="">All Types</option>
+                        <option value="lost">Lost Reports</option>
+                        <option value="found">Found Reports</option>
+                    </select>
+                </div>
+
+                <div id="items-container" class="items-grid">
+                    <!-- Items will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
