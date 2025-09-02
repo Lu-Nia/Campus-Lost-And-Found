@@ -194,3 +194,100 @@
                 minute: '2-digit'
             });
         }
+
+// API Functions
+        async function apiCall(endpoint, options = {}) {
+            try {
+                const response = await fetch(${API_BASE}${endpoint}, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'An error occurred');
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // Load and Display Functions
+        async function loadItems() {
+            try {
+                const params = new URLSearchParams();
+                
+                const name = document.getElementById('search-name').value;
+                const location = document.getElementById('search-location').value;
+                const status = document.getElementById('filter-status').value;
+                const type = document.getElementById('filter-type').value;
+
+                if (name) params.append('name', name);
+                if (location) params.append('location', location);
+                if (status) params.append('status', status);
+                if (type) params.append('item_type', type);
+
+                const items = await apiCall(/items?${params});
+                currentItems = items;
+                displayItems(items);
+            } catch (error) {
+                showAlert(Error loading items: ${error.message}, 'error');
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const stats = await apiCall('/stats');
+                document.getElementById('total-items').textContent = stats.total_items;
+                document.getElementById('lost-items').textContent = stats.lost_items;
+                document.getElementById('found-items').textContent = stats.found_items;
+                document.getElementById('claimed-items').textContent = stats.claimed_items;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function displayItems(items) {
+            if (items.length === 0) {
+                itemsContainer.innerHTML = '<div style="text-align: center; color: #64748b; padding: 40px;">No items found matching your criteria.</div>';
+                return;
+            }
+
+            itemsContainer.innerHTML = items.map(item => `
+                <div class="item-card">
+                    <div class="item-status status-${item.status}">${item.status}</div>
+                    <div class="item-type type-${item.is_lost_report ? 'lost' : 'found'}">
+                        ${item.is_lost_report ? 'Lost Report' : 'Found Report'}
+                    </div>
+                    <div class="item-title">${escapeHtml(item.name)}</div>
+                    <div class="item-description">${escapeHtml(item.description)}</div>
+                    <div class="item-details">
+                        📍 ${escapeHtml(item.location)}<br>
+                        📅 ${formatDate(item.date_reported)}<br>
+                        📧 ${escapeHtml(item.contact_email)}
+                        ${item.contact_phone ? <br>📱 ${escapeHtml(item.contact_phone)} : ''}
+                    </div>
+                    ${item.linked_item_id ? '<div class="linked-indicator">🔗 Potentially matched with another item</div>' : ''}
+                    <div class="item-actions">
+                        <button class="btn btn-small" onclick="openStatusModal('${item.id}', '${item.status}')">
+                            Update Status
+                        </button>
+                        <button class="btn btn-small btn-danger" onclick="deleteItem('${item.id}')">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
