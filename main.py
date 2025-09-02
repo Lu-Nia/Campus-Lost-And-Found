@@ -154,3 +154,51 @@ def get_items(
     return query.order_by(Item.date_reported.desc()).all()
 
 
+@app.get("/api/items/{item_id}", response_model=ItemResponse)
+def get_item(item_id: str, db: Session = Depends(get_db)):
+    item = db.query(Item).filter(Item.id == item_id).first()
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
+    return item
+
+@app.put("/api/items/{item_id}/status", response_model=ItemResponse)
+def update_item_status(item_id: str, item_update: ItemUpdate, db: Session = Depends(get_db)):
+    item = db.query(Item).filter(Item.id == item_id).first()
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
+    
+    item.status = item_update.status
+    db.commit()
+    db.refresh(item)
+    return item
+
+@app.delete("/api/items/{item_id}")
+def delete_item(item_id: str, db: Session = Depends(get_db)):
+    item = db.query(Item).filter(Item.id == item_id).first()
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
+    
+    db.delete(item)
+    db.commit()
+    return {"message": "Item deleted successfully", "id": item_id}
+
+@app.get("/api/stats")
+def get_stats(db: Session = Depends(get_db)):
+    total_items = db.query(Item).count()
+    lost_items = db.query(Item).filter(Item.is_lost_report == True, Item.status != ItemStatus.claimed).count()
+    found_items = db.query(Item).filter(Item.is_lost_report == False, Item.status != ItemStatus.claimed).count()
+    claimed_items = db.query(Item).filter(Item.status == ItemStatus.claimed).count()
+    
+    return {
+        "total_items": total_items,
+        "lost_items": lost_items,
+        "found_items": found_items,
+        "claimed_items": claimed_items
+    }
+
+# ---------------- Run App ----------------
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
+
+
