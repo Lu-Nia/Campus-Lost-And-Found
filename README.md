@@ -152,6 +152,8 @@ GET /items/stats/overview - Get statistics
 Users
 PATCH /users/password - Update password
 
+(Soon we will offically dockerize the application, we are still in the process currently)
+
 # 🗄️ Database Schema
 https://via.placeholder.com/600x300?text=Database+Schema+Diagram
 
