@@ -149,10 +149,7 @@ DELETE /items/{id} - Delete item
 
 GET /items/stats/overview - Get statistics
 
-Users
-PATCH /users/password - Update password
-
-(Soon we will offically dockerize the application, we are still in the process currently)
+(Soon we will offically dockerize the application, we are still in the process currently as seen with the inclusion of docker-related files in the project)
 
 # 🗄️ Database Schema
 https://via.placeholder.com/600x300?text=Database+Schema+Diagram
