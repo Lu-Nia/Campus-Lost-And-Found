@@ -1,0 +1,153 @@
+.item-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  max-width: 350px; /* Smaller width */
+  margin: 0 auto;
+}
+
+.item-card:hover {
+  transform: translateY(-2px);
+}
+
+.item-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.item-content {
+  padding: 1rem;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.item-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+  flex: 1;
+}
+
+.item-status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.item-description {
+  color: #666;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+  font-size: 0.9rem;
+}
+
+.item-details {
+  margin-bottom: 1rem;
+}
+
+.item-detail {
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.item-detail strong {
+  color: #333;
+  margin-right: 0.25rem;
+}
+
+.contact-link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.contact-link:hover {
+  text-decoration: underline;
+}
+
+.item-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.status-btn, .delete-btn {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.status-btn:disabled, .delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.found-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.found-btn:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.claim-btn {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.claim-btn:hover:not(:disabled) {
+  background-color: #e0a800;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.owner-notice {
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.claimed-confirmation {
+  text-align: center;
+  padding: 2rem;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.claimed-confirmation h3 {
+  margin: 0 0 1rem 0;
+  color: #155724;
+}
+
+/* Update the item list grid */
+.item-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
