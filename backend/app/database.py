@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:OneTwoThree@localhost:3306/LostAndFound")
+DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:YourMySQLPasswordHere@localhost:3306/LostAndFound")
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
